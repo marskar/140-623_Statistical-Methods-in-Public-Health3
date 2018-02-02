@@ -1,8 +1,48 @@
-# Biostatistics 140.
+---
+title: Biostatistics 140.623 
+subtitle: <h3 style="font-style:normal">Third Term, 2017-2018 <br> Problem Set 1 (with R)</h3>
+author: <h4 style="font-style:normal">Martin Skarzynski</h4>
+date: <h4 style="font-style:normal">02/01/2018</h4>
+output: pdf_document
+---
+<!-- #The markdown document title uses the h1.title CSS selector -->
+<!-- #The markdown document author field uses the h4.author CSS selector -->
+<!-- #The markdown document date field uses the h4.date CSS selector -->
+<style type="text/css">
 
-# Third Term, 2017-
 
-## Problem Set 1 (with R)
+h1.title {
+  font-size: 38px;
+  color: Black;
+  text-align: center;
+}
+h3.subtitle {
+  font-size: 24px;
+  font-style: normal;
+  color: Black;
+  text-align: center;
+}
+h4.author { /* Header 4 - and the author and data headers use this too  */
+  font-size: 18px;
+  color: Black;
+  text-align: center;
+}
+h4.date { /* Header 4 - and the author and data headers use this too  */
+  font-size: 18px;
+  color: Black;
+  text-align: center;
+}
+body{
+  font-family: Arial
+}
+.table {
+  width: auto;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 **Vitamin A Supplementation to Prevent Children’s Mortality in Nepal**
 
@@ -11,10 +51,9 @@
 **Learning Objectives:**
 
 Students who successfully complete this project section will be able to:
-- Calculate the sample size necessary for estimating mortality in children < 3 years of age with
-a desired level of precision.
-- Estimate the sample size for a new study of vitamin A and mortality in children < 3 years of
-age.
+
+- Calculate the sample size necessary for estimating mortality in children < 3 years of age with a desired level of precision.
+- Estimate the sample size for a new study of vitamin A and mortality in children < 3 years of age.
 
 **Data Set** :
 
@@ -82,12 +121,12 @@ Summarize your sample size findings in a **table**.
 
 True Difference | Standard Deviation | Sample Size per Group 
 |--|--|--|
-|0.25|12|`r round(samp(s=12,d=0.25))`|
-|0.25|20|`r round(samp(s=20,d=0.25))`|
-|0.5|12|`r round(samp(s=12,d=0.5))`|
-|0.5|20|`r round(samp(s=20,d=0.5))`|
-|0.75|12|`r round(samp(s=12,d=0.75))`|
-|0.75|20|`r round(samp(s=20,d=0.75))`|
+|0.25|12|`r format(round(samp(s=12,d=0.25)),scientific=FALSE)`|
+|0.25|20|`r format(round(samp(s=20,d=0.25)),scientific=FALSE)`|
+|0.5|12|`r format(round(samp(s=12,d=0.5)),scientific=FALSE)`|
+|0.5|20|`r format(round(samp(s=20,d=0.5)),scientific=FALSE)`|
+|0.75|12|`r format(round(samp(s=12,d=0.75)),scientific=FALSE)`|
+|0.75|20|`r format(round(samp(s=20,d=0.75)),scientific=FALSE)`|
 
 
 2) Now suppose you have a chance to investigate the effect of vitamin A supplementation
@@ -186,12 +225,12 @@ Vary the assumptions by:
 
 Mortality Rate in the Control Group | Relative Risk of Interest | Sample Size per Group 
 |--|--|--|
-|0.0294|1.20|`r round(samp2(p1=0.0294,p2=(0.0294/1.20)))`|
+|0.0294|1.20|`r format(round(samp2(p1=0.0294,p2=(0.0294/1.20))),scientific=FALSE)`|
 |0.0244|1.00|Inf|
-|0.0344|1.75|`r round(samp2(p1=0.0344,p2=(0.0344/1.75)))`|
-|0.0294|1.20|`r round(samp2(p1=0.0294,p2=(0.0294/1.20)))`|
+|0.0344|1.75|`r format(round(samp2(p1=0.0344,p2=(0.0344/1.75))),scientific=FALSE)`|
+|0.0294|1.20|`r format(round(samp2(p1=0.0294,p2=(0.0294/1.20))),scientific=FALSE)`|
 |0.0244|1.00|Inf|
-|0.0344|1.75|`r round(samp2(p1=0.0344,p2=(0.0344/1.75)))`|
+|0.0344|1.75|`r format(round(samp2(p1=0.0344,p2=(0.0344/1.75))),scientific=FALSE)`|
 
 As the relative risk approaches 1, the sample size gets larger. 
 Using the method above, I obtained Inf (short for infinity) when the relative risk was 1. 
@@ -218,12 +257,12 @@ samp3  <- function(p1,p2){
 
 Mortality Rate in the Control Group | Relative Risk of Interest | Sample Size per Group 
 |--|--|--|
-|0.0294|1.20|`r round(samp3(p1=0.0294,p2=(0.0294/1.20)))`|
+|0.0294|1.20|`r format(round(samp3(p1=0.0294,p2=(0.0294/1.20))),scientific=FALSE)`|
 |0.0244|1.00|Inf|
-|0.0344|1.75|`r round(samp3(p1=0.0344,p2=(0.0344/1.75)))`|
-|0.0294|1.20|`r round(samp3(p1=0.0294,p2=(0.0294/1.20)))`|
+|0.0344|1.75|`r format(round(samp3(p1=0.0344,p2=(0.0344/1.75))),scientific=FALSE)`|
+|0.0294|1.20|`r format(round(samp3(p1=0.0294,p2=(0.0294/1.20))),scientific=FALSE)`|
 |0.0244|1.00|Inf|
-|0.0344|1.75|`r round(samp3(p1=0.0344,p2=(0.0344/1.75)))`|
+|0.0344|1.75|`r format(round(samp3(p1=0.0344,p2=(0.0344/1.75))),scientific=FALSE)`|
 
 To have a higher power (90% instead of 80%), the sample size required is higher. 
 Just as before, the greater the relative risk, the smaller the sample size required.
