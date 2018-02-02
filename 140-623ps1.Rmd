@@ -82,12 +82,12 @@ Summarize your sample size findings in a **table**.
 
 True Difference | Standard Deviation | Sample Size per Group 
 |--|--|--|
-|0.25|12|`r samp(s=12,d=0.25)`|
-|0.25|20|`r samp(s=20,d=0.25)`|
-|0.5|12|`r samp(s=12,d=0.5)`|
-|0.5|20|`r samp(s=20,d=0.5)`|
-|0.75|12|`r samp(s=12,d=0.75)`|
-|0.75|20|`r samp(s=20,d=0.75)`|
+|0.25|12|`r round(samp(s=12,d=0.25))`|
+|0.25|20|`r round(samp(s=20,d=0.25))`|
+|0.5|12|`r round(samp(s=12,d=0.5))`|
+|0.5|20|`r round(samp(s=20,d=0.5))`|
+|0.75|12|`r round(samp(s=12,d=0.75))`|
+|0.75|20|`r round(samp(s=20,d=0.75))`|
 
 
 2) Now suppose you have a chance to investigate the effect of vitamin A supplementation
@@ -186,14 +186,16 @@ Vary the assumptions by:
 
 Mortality Rate in the Control Group | Relative Risk of Interest | Sample Size per Group 
 |--|--|--|
-|0.0294|1.20|`r samp2(p1=0.0294,p2=(0.0294/1.20))`|
+|0.0294|1.20|`r round(samp2(p1=0.0294,p2=(0.0294/1.20)))`|
 |0.0244|1.00|Inf|
-|0.0344|1.75|`r samp2(p1=0.0344,p2=(0.0344/1.75))`|
-|0.0294|1.20|`r samp2(p1=0.0294,p2=(0.0294/1.20))`|
+|0.0344|1.75|`r round(samp2(p1=0.0344,p2=(0.0344/1.75)))`|
+|0.0294|1.20|`r round(samp2(p1=0.0294,p2=(0.0294/1.20)))`|
 |0.0244|1.00|Inf|
-|0.0344|1.75|`r samp2(p1=0.0344,p2=(0.0344/1.75))`|
+|0.0344|1.75|`r round(samp2(p1=0.0344,p2=(0.0344/1.75)))`|
 
-As the relative risk approaches 1, the sample size gets larger. Using the method above, I obtained Inf (short for infinity) when the relative risk was 1.
+As the relative risk approaches 1, the sample size gets larger. 
+Using the method above, I obtained Inf (short for infinity) when the relative risk was 1. 
+The greater the relative risk, the smaller the sample size required.
 
 5) Construct another **table** that displays the total sample sizes required under the same
 varying assumptions of the mortality rate in the control group and the relative risk of interest.
@@ -216,15 +218,19 @@ samp3  <- function(p1,p2){
 
 Mortality Rate in the Control Group | Relative Risk of Interest | Sample Size per Group 
 |--|--|--|
-|0.0294|1.20|`r samp3(p1=0.0294,p2=(0.0294/1.20))`|
+|0.0294|1.20|`r round(samp3(p1=0.0294,p2=(0.0294/1.20)))`|
 |0.0244|1.00|Inf|
-|0.0344|1.75|`r samp3(p1=0.0344,p2=(0.0344/1.75))`|
-|0.0294|1.20|`r samp3(p1=0.0294,p2=(0.0294/1.20))`|
+|0.0344|1.75|`r round(samp3(p1=0.0344,p2=(0.0344/1.75)))`|
+|0.0294|1.20|`r round(samp3(p1=0.0294,p2=(0.0294/1.20)))`|
 |0.0244|1.00|Inf|
-|0.0344|1.75|`r samp3(p1=0.0344,p2=(0.0344/1.75))`|
+|0.0344|1.75|`r round(samp3(p1=0.0344,p2=(0.0344/1.75)))`|
+
+To have a higher power (90% instead of 80%), the sample size required is higher. 
+Just as before, the greater the relative risk, the smaller the sample size required.
 
 6) Select a design based upon your findings from parts 4 and 5 above. Write a brief paragraph
 that presents and justifies your choice. Be numerate.
 
-
+Based on my findings from parts 4 and 5 above, I would aim to recruit between 18000 and 23000 children to investigate the effect of vitamin A supplementation
+on the mortality of children under 3 years of age. This sample size will allow me to detect a relative risk similar to the one that was estimated for Nepali children in the less-than-3-year-old age group with a power between ~80-90% and a significance level of 0.05. These values are reasonable because they are based on the Nepal Vitamin A study, which is likely to be relevant for future studies regarding the effect of Vitamin supplementation on child mortality. It may be a good idea to increase the sample size to account for potential losses-to-follow-up in each treatment group. Losses-to-follow-up may occur, for example, if the parents of some of the children decide not to participate anymore. 
 
