@@ -84,7 +84,7 @@ modelC = glm(D ~ stage + t60 + t60sp, offset=log(N), family=poisson(link="log"),
 summary(modelC)
 modelC$coefficients; confint.default(modelC) ## coefficients
 
-# Model D: stage + t-60 + (t-60)^+ + stage*(t•60) + stage*(t•60)^+
+#package Model D: stage + t-60 + (t-60)^+ + stage*(t•60) + stage*(t•60)^+
 modelD = glm(D ~ stage + t60 + t60sp + stage:t60 + stage:t60sp, offset=log(N), family=poisson(link="log"), data=binData)
 summary(modelD)
 modelD$coefficients; confint.default(modelD) ## coefficients
@@ -93,7 +93,9 @@ h. Use the AIC = -2 log likelihood + 2(# of parameters) to identify the “best�
 
 AIC(modelA, modelB, modelC, modelD)
 
-i. Now use the csv data set lymphoma.csv. Calculate Kaplan-Meier (K-M) estimates of the survival curve with 95% CI separately for each group. Plot the K-M curves against time.
+Based on the Akaike information criterion (AIC), the best model is modelB. ModelB has two variables, `stage` and `t60` in addition the the intercept, all of which are statistically significant according to the model summary. The models that include additional variables have higher AIC values, indicating that the contribution of these additional variables are not worth the burden of a larger model.
+
+i. Now use the csv data set lymphoma.csv. Calculate Kaplan-Meierpackage (K-M) estimates of the survival curve with 95% CI separately for each group. Plot the K-M curves against time.
 
 lymphData = read_csv("lymphoma.csv")
 head(lymphData)
@@ -109,6 +111,8 @@ legend("bottomleft", c("Stage 3", "Stage 4"),
 col=c("blue", "red"), lty=1)
 
 j. Compare the K-M curves versus the display of S(t) – vs- mid_days that you produced in step a.
+
+The curves are similar in that stage 4 cancer survival is clearly much less likely than stage 3 cancer survival.
 
 k. Carry out a log-rank test and determine a p-value for the null hypothesis that the two population survival curves are the same for Stage 4 -vs- Stage 3 patients. What do you conclude?
 
