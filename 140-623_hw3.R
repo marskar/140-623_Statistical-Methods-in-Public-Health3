@@ -49,14 +49,10 @@ binData = binData %>%
 mutate(t = mid_days) %>%
 mutate(N = P_Days)
 
-#' d. Fit the following four log-linear Poisson regression models to the grouped survival data log EYi = 
-#' Model A: log Ni + β0 + β1stage
 #' 
-#' B: log Ni + β0 + β1stage + β2(t-60)
+#' d. Fit the following four log-linear Poisson regression models to the grouped survival data 
 #' 
-#' C: log Ni + β0 + β1stage + β2(t-60) + β3(t-60)+
-#' 
-#' D: log Ni + β0 + β1stage+ β2(t-60) + β3(t-60)+ +β4(t-60)*stage+ β5(t-60)+*stage
+#' The four models are in part g below.
 #' 
 #' e. Generate time terms, centered and spline:
 
@@ -66,6 +62,7 @@ mutate(t60sp = ifelse(t > 60, t-60, 0))
 
 #' f. Generate interaction terms: We don’t need to do this in R, since we can include the interaction directly in our model.
 #' 
+
 #' g. Fit the models:
 # Model A: stage
 modelA = glm(D ~ stage, offset=log(N), family=poisson(link="log"), data=binData)
@@ -89,13 +86,13 @@ modelD = glm(D ~ stage + t60 + t60sp + stage:t60 + stage:t60sp, offset=log(N), f
 summary(modelD)
 modelD$coefficients; confint.default(modelD) ## coefficients
 
-h. Use the AIC = -2 log likelihood + 2(# of parameters) to identify the “best” prediction model from among A-D. Interpret the model results in a few sentences, as if for a journal article.
+#' h. Use the AIC = -2 log likelihood + 2(# of parameters) to identify the “best” prediction model from among A-D. Interpret the model results in a few sentences, as if for a journal article.
 
 AIC(modelA, modelB, modelC, modelD)
 
-Based on the Akaike information criterion (AIC), the best model is modelB. ModelB has two variables, `stage` and `t60` in addition the the intercept, all of which are statistically significant according to the model summary. The models that include additional variables have higher AIC values, indicating that the contribution of these additional variables are not worth the burden of a larger model.
+#' Based on the Akaike information criterion (AIC), the best model is modelB. ModelB has two variables, `stage` and `t60` in addition the the intercept, all of which are statistically significant according to the model summary. The models that include additional variables have higher AIC values, indicating that the contribution of these additional variables is not worth the burden of a larger model.
 
-i. Now use the csv data set lymphoma.csv. Calculate Kaplan-Meierpackage (K-M) estimates of the survival curve with 95% CI separately for each group. Plot the K-M curves against time.
+#' i. Now use the csv data set lymphoma.csv. Calculate Kaplan-Meierpackage (K-M) estimates of the survival curve with 95% CI separately for each group. Plot the K-M curves against time.
 
 lymphData = read_csv("lymphoma.csv")
 head(lymphData)
@@ -110,19 +107,32 @@ ylab="S(t)", xlab="time" )
 legend("bottomleft", c("Stage 3", "Stage 4"),
 col=c("blue", "red"), lty=1)
 
-j. Compare the K-M curves versus the display of S(t) – vs- mid_days that you produced in step a.
+#' j. Compare the K-M curves versus the display of S(t) – vs- mid_days that you produced in step a.
+#' 
 
-The curves are similar in that stage 4 cancer survival is clearly much less likely than stage 3 cancer survival.
+#' The curves are similar in that stage 4 cancer survival is clearly much less likely than stage 3 cancer survival.
+#' 
 
-k. Carry out a log-rank test and determine a p-value for the null hypothesis that the two population survival curves are the same for Stage 4 -vs- Stage 3 patients. What do you conclude?
+#' k. Carry out a log-rank test and determine a p-value for the null hypothesis that the two population survival curves are the same for Stage 4 -vs- Stage 3 patients. What do you conclude?
 
 survdiff(SurvObj ~ stage, data=lymphData)
 
-l. Fit a Cox proportional hazards model with an arbitrary baseline hazard and a group effect for stage
+#' 
+#' The p-value (0.024) indicates that there is enough evidence to reject the null hypothesis that the two population survival curves are the same for Stage 4 -vs- Stage 3 patients.
+#'
 
-model1 = coxph(SurvObj ~ stage, data = summary(model1) lymphData, ties="breslow")
+#' l. Fit a Cox proportional hazards model with an arbitrary baseline hazard and a group effect for stage
 
-m. Compare the results of the log-rank test from part k. with the corresponding test for the Cox model in part l. Do they differ enough to change interpretation?
+model1 = coxph(SurvObj ~ stage, data = lymphData, ties="breslow")
+summary(model1)
 
-n. Create an R script file that documents and archives the steps of your statistical analysis. This file will make your analysis “reproducible.”
+#' m. Compare the results of the log-rank test from part k. with the corresponding test for the Cox model in part l. Do they differ enough to change interpretation?
+#' 
 
+#' The results for parts k and l are similar enough that I would not change my interpretation. The p-value from the Cox model in part k is 0.024, which is close to the Likelihood ratio test, Wald test and logrank test p-values (all < 0.03).
+#' 
+
+#' n. Create an R script file that documents and archives the steps of your statistical analysis. This file will make your analysis “reproducible.”
+#' 
+
+#' This PDF was made using an R script thanks to the `rmarkdown` package, as per the package information on the RStudio website: [https://rmarkdown.rstudio.com/articles_report_from_r_script.html](https://rmarkdown.rstudio.com/articles_report_from_r_script.html).
