@@ -32,8 +32,8 @@
 #'- survyr: time (in years) to death or censoring
 #'- death: indicator = 1 if patient died, 0 if censored
 #'- ageyr: age in years [continuous variable]
-#'- histo: histologic disease stage (1 – 4) [categorical variable]
-#'- agecat: age categories, coded as "< 45 yrs", "45 – 55 yrs", and ">= 55 yrs"
+#'- histo: histologic disease stage (1 - 4) [categorical variable]
+#'- agecat: age categories, coded as "< 45 yrs", "45 - 55 yrs", and ">= 55 yrs"
 
 #' Also included in the data set for your possible use are the following indicator (dummy) variables:
 #' 
@@ -118,8 +118,8 @@ summary(model2)
 #' f. Summarize your findings in a brief report (less than two pages with at most one table and
 #' one figure) as if for a biomedical/public health journal.
 #' A suggested format is:
-#' - Introduction – a few sentences about the research question(s)
-#' - Data description – simple tabulations describing patient characteristics
+#' - Introduction - a few sentences about the research question(s)
+#' - Data description - simple tabulations describing patient characteristics
 #' - Results from multiple models that address question(s) (e.g., bivariate and multivariable)
 #' - Graphical display that presents evidence in the data relevant to your scientific question.
 #' 
@@ -128,17 +128,11 @@ summary(model2)
 
 #' Between January 1974 and May 1984 a double-blinded randomized trial on patients with primary biliary cirrhosis (PBC) of the liver was conducted at the Mayo clinic. A total of 312 patients were randomized to either receive the drug D-penicillimin (DPCA), or a placebo. Patients were followed until they died from PBC, or until censoring, either because of administrative censoring (withdrawn alive at end of study), death not attributable to PBC, liver transplantation, or loss to follow-up. At baseline clinical, biochemical, serological and histologic measurements were recorded on each patient. A sub-study was undertaken to test for increased survival amongst patients on the new treatment, and to investigate the association between survival and patients' age, gender, histologic stage of disease, and serum bilirubin level.
 
-#' The research question that I will try to answer in this report is whether D-penicillin (DPCA), the drug tested in the PBC trial, provided any benefit for the patient population as a whole (n=312) and for sub-groups based on sex, age and disease stage. I hypothesize that the drug effect will not be different between the 3 age categories, but will depend on disease stage. In other wrods, I expect that there will be differences in time to death between the 4 disease stages, specifically that more advanced disease will be more difficult to treat, which will result in a shorter time to event. I will also assess whether bilirubin is a prognostic marker and whether drug beenfit will differ among men versus women.
+#' The research question that I will try to answer in this report is whether D-penicillin (DPCA), the drug tested in the PBC trial, provided any benefit for the patient population as a whole (n=312) and for sub-groups based on sex, age and disease stage. I hypothesize that the drug effect will not be different between the 3 age categories, but will depend on disease stage. In other wrods, I expect that there will be differences in time to death between the 4 disease stages, specifically that more advanced disease will be more difficult to treat, which will result in a shorter time to event. I will also assess whether bilirubin is a prognostic marker and whether drug benefit will differ among men versus women.
 #' 
 
 #' ## Data description 
 
-
-#' The best way to describe the data in my opinion is using the `skim` function from the `skimr` R package. This function produces a table of descriptive statistics but also small histograms showing the distribution of each variable. 
-#' 
-# install.packages("skimr")
-library(skimr)
-skimr::skim(pbcData)
 
 #' There are a total of 312 patients and the median survival time was around 5 years. As for patient characteristics, the representation across age categories and disease stages appears to spread relatively evenly. The `age` and `survyr` variable appear to be normally distributed with a slight leftward skew. Interestingly, bilirubin is skewed highly to the left indicating that there are outliers with high bilirubin values.
 
@@ -168,8 +162,6 @@ skimr::skim(pbcData)
 
 model3 = coxph(SurvObj ~ sex + bil + as.factor(histo) + as.factor(agecat), data = pbcData)
 summary(model3)
-
-
 
 model3 = coxph(SurvObj ~ sex + bil + as.factor(histo) + as.factor(agecat), data = pbcData)
 summary(model3)
