@@ -158,13 +158,7 @@ summary(model2)
 #' 
 
 #' ## Results 
-#' First, I decided to put all variables of interest into one model rather creating multiple models that address each of the above questions, because the instructions say to have at most one figure and one table. If any of the results are statistically significant, I can explore the question further with a more specific model in the future. First some basic exploratory data analysis will let me know if I am on the right track with the variables I have chosen. If there is no difference between the median survival times of the groups I am interested in, it will be unlikely that I will see anything significant in my model.
-
-model3 = coxph(SurvObj ~ sex + bil + as.factor(histo) + as.factor(agecat), data = pbcData)
-summary(model3)
-
-model3 = coxph(SurvObj ~ sex + bil + as.factor(histo) + as.factor(agecat), data = pbcData)
-summary(model3)
+#' First, I will produce a few simple summaries of drug response based on `sex`, `agecat` and `histo` variables. First some basic exploratory data analysis will let me know if I am on the right track with the variables I have chosen. If there is no difference between the median survival times of the groups I am interested in, it will be unlikely that I will see anything significant in my model. From this initial analysis it looks like patients in the highest age category that were given placebo fare the worst. These results indicate that elderly patients my stand to benefit the most from taking the drug. Shockingly, men taking the drug appear to have a shorter survival time than with the drug, and do not survive as long as a women in general. Similarly, the drug appeared to have a negative effect on survival in patients with earliest stage of disease (histo = 1). Now I will take a similar approach to the data but using a cox proportional hazards model.
 library(dplyr)
 # install.packages("broom")
 library(broom)
@@ -178,10 +172,41 @@ pbcData %>%
     group_by(histo, drug) %>%
     summarise(med_surv = median(survyr))
 
-#' From this initial analysis it looks like patients in the highest age category that were given placebo fare the worst. These results indicate that elderly patients my stand to benefit the most from taking the drug. Shockingly, men taking the drug appear to have a shorter survival time than with the drug, and do not survive as long as a women in general. Similarly, the drug appeared to have a negative effect on survival in patients with earliest stage of disease (histo = 1). Now I will take a similar approach to the data but using a cox model.
+par(mfrow=c(3,3))
 
+
+#' I decided to put all variables of interest into one model rather creating multiple models that address each of the above questions, because the instructions say to have at most one figure and one table. If any of the results are statistically significant, I can explore the question further with a more specific model in the future. 
+
+km_all_var = survfit(SurvObj ~ drug + sex + bil + as.factor(histo) + as.factor(agecat), data = pbcData)
+all_var_summary <- summary(km_all_var)
+all_var_summary
+km_all_var$type
+#' The results of the model 
+#' Plotting'
+km_drug_sex = survfit(SurvObj ~ drug + sex, data = pbcData,
+type="kaplan-meier", conf.type="log-log")
+km_age = survfit(SurvObj ~ drug + as.factor(agecat), data = pbcData,
+type="kaplan-meier", conf.type="log-log")
+km_histo = survfit(SurvObj ~ drug + as.factor(histo), data = pbcData,
+type="kaplan-meier", conf.type="log-log")
+pbcData['bilcat'] <- ifelse(pbcData["bil"][[1]]>median(pbcData["bil"][[1]]), 1, 0)
+head(pbcData)
+km_bil = survfit(SurvObj ~ drug + as.factor(bilcat), data = pbcData,
+type="kaplan-meier", conf.type="log-log")
+legend(
+       "topright",
+       legend=unique(group),
+       col=1:N,
+       horiz=FALSE,
+       bty='n')
+plot(km_histo, col = 1:8)
+length(km_histo$strata)
+names( km_histo$strata[1] )
+summary(model3)
 glance(model3)
+?augment
 aug <- augment(model3, pbcData)
+summary(object = model3)
 risk_aug <- augment(model3, pbcData, type.predict = "risk")
 exp_aug <- augment(model3, pbcData, type.predict = "expected")
 
