@@ -177,9 +177,19 @@ par(mfrow=c(2,2))
 
 #' I decided to put all variables of interest into one model rather creating multiple models that address each of the above questions, because the instructions say to have at most one figure and one table. If any of the results are statistically significant, I can explore the question further with a more specific model in the future. 
 
-km_all_var = survfit(SurvObj ~ drug + sex + bil + as.factor(histo) + as.factor(agecat), data = pbcData)
-all_var_summary <- summary(km_all_var)
-all_var_summary
+cox_all_var = coxph(formula = SurvObj ~ drug + sex + bil + as.factor(histo) + as.factor(agecat), data = pbcData)
+all_var_summary <- summary(cox_all_var)
+library(broom, help)
+cox_all_var %>%
+tidy()
+coef(cox_all_var) %>%
+summary()
+df <- data_frame(adj_HR = exp(coef(cox_all_var)),
+           lower = confint(cox_all_var)[,1],
+           upper = confint(cox_all_var)[,2])
+library(knitr)
+knitr::kable(df, format = "markdown")
+rownames(confint(cox_all_var))
 #' The results of the model 
 
 #' Plotting
