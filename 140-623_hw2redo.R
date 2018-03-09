@@ -172,7 +172,7 @@ pbcData %>%
     group_by(histo, drug) %>%
     summarise(med_surv = median(survyr))
 
-par(mfrow=c(3,3))
+par(mfrow=c(2,2))
 
 
 #' I decided to put all variables of interest into one model rather creating multiple models that address each of the above questions, because the instructions say to have at most one figure and one table. If any of the results are statistically significant, I can explore the question further with a more specific model in the future. 
@@ -180,43 +180,30 @@ par(mfrow=c(3,3))
 km_all_var = survfit(SurvObj ~ drug + sex + bil + as.factor(histo) + as.factor(agecat), data = pbcData)
 all_var_summary <- summary(km_all_var)
 all_var_summary
-km_all_var$type
 #' The results of the model 
-#' Plotting'
+
+#' Plotting
 km_drug_sex = survfit(SurvObj ~ drug + sex, data = pbcData,
 type="kaplan-meier", conf.type="log-log")
 km_age = survfit(SurvObj ~ drug + as.factor(agecat), data = pbcData,
 type="kaplan-meier", conf.type="log-log")
 km_histo = survfit(SurvObj ~ drug + as.factor(histo), data = pbcData,
 type="kaplan-meier", conf.type="log-log")
+
+# histoplot
+plot(km_histo, col = 1:8, xlab = "Time", ylab = "Survival")
+legend("bottomleft",
+       legend=names(km_histo$strata),
+       col=1:8,
+       cex=0.5,
+       lty=c(1,1), # gives the legend appropriate symbols (lines) 
+       lwd=c(2.5,2.5))
+
+
+#' To make a similar plot with the `bil` variable, I will create a new categorical variable called `bilcat`.
+
+# bilplot
 pbcData['bilcat'] <- ifelse(pbcData["bil"][[1]]>median(pbcData["bil"][[1]]), 1, 0)
 head(pbcData)
 km_bil = survfit(SurvObj ~ drug + as.factor(bilcat), data = pbcData,
 type="kaplan-meier", conf.type="log-log")
-legend(
-       "topright",
-       legend=unique(group),
-       col=1:N,
-       horiz=FALSE,
-       bty='n')
-plot(km_histo, col = 1:8)
-length(km_histo$strata)
-names( km_histo$strata[1] )
-summary(model3)
-glance(model3)
-?augment
-aug <- augment(model3, pbcData)
-summary(object = model3)
-risk_aug <- augment(model3, pbcData, type.predict = "risk")
-exp_aug <- augment(model3, pbcData, type.predict = "expected")
-
-par(mfrow=c(3,3))
-## install.packages("ggplot2")
-library(ggplot2)
-ggplot(aug, aes(ageyr, .fitted, color = sex, shape = as.factor(histo))) + geom_point()
-ggplot(risk_aug, aes(ageyr, .fitted, color = sex, shape = as.factor(histo))) + geom_point()
-ggplot(exp_aug, aes(ageyr, .fitted, color = sex, shape = as.factor(histo))) + geom_point()
-
-ggplot(aug, aes(bil, .fitted, color = sex, shape = as.factor(histo))) + geom_point()
-ggplot(risk_aug, aes(bil, .fitted, color = sex, shape = as.factor(histo))) + geom_point()
-ggplot(exp_aug, aes(bil, .fitted, color = sex, shape = as.factor(histo))) + geom_point()
