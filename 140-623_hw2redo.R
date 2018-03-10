@@ -70,6 +70,9 @@ str(pbcData)
 summary(pbcData)
 library(purrr, help)
 map(pbcData, class)
+pbcData$histo <- as.factor(pbcData$histo)
+pbcData$agecat <- as.factor(pbcData$agecat)
+map(pbcData, class)
 round(prop.table(table(pbcData[c("death", "drug", "sex")])), 3)
 
 #' b. Define a survival object, defining the time variable (survyr) and the event (death == 1).
@@ -110,7 +113,7 @@ xlab="Analysis time (shown on log scale)")
 model1 = coxph(SurvObj ~ drug, data = pbcData)
 summary(model1)
 
-model2 = coxph(SurvObj ~ sex + bil + as.factor(histo), data = pbcData)
+model2 = coxph(SurvObj ~ sex + bil + histo, data = pbcData)
 summary(model2)
 
 #' e. Save your R script file that documents and archives the steps of your statistical analysis.
@@ -176,7 +179,8 @@ pbcData %>%
 
 #' I decided to put all variables of interest into one model rather creating multiple models that address each of the above questions, because the instructions say to have at most one figure and one table. If any of the results are statistically significant, I can explore the question further with a more specific model in the future. 
 
-cox_all_var = coxph(formula = SurvObj ~ drug + sex + bil + as.factor(histo) + as.factor(agecat), data = pbcData)
+
+cox_all_var = coxph(formula = SurvObj ~ drug + sex + bil + histo + agecat, data = pbcData)
 all_var_summary <- summary(cox_all_var)
 library(broom, help)
 cox_all_var %>%
@@ -194,59 +198,74 @@ figs <- captioner(prefix="Figure")
 tbls <- captioner(prefix="Table")
 library(knitr)
 knitr::kable(df, format = "markdown")
-tbls(name="adj_HR_tbl", caption = "Adjusted Hazard Ratio Estimates of Death obtained from Proportional Hazards Regression.")
+
+#' `r tbls(name="adj_HR_tbl", caption = "Adjusted Hazard Ratio Estimates of Death obtained from Proportional Hazards Regression.")`
+
+#'
+
 #' The results of the model 
 
 #' Plotting
-par(mfrow=c(2,2))
+par(mfrow=c(2,2), mar = c(0, 0, 0, 0), oma = c(4, 4, 0.1, 0.1))
 palette()
 # sexplot
 km_sex = survfit(SurvObj ~ drug + sex, data = pbcData,
 type="kaplan-meier", conf.type="log-log")
-plot(km_sex, col = 1:8, xlab = "Time", ylab = "Survival")
+plot(km_sex, las = 1,
+     xaxt='n', ann=FALSE,
+     col = 1:8)
 legend("bottomleft",
        legend=names(km_sex$strata),
        col=1:length(km_sex$strata),
-       cex=0.5,
+       cex = 0.75,
        lty=c(1,1), # gives the legend appropriate symbols (lines) 
        lwd=c(2.5,2.5))
 
 # ageplot
-km_age = survfit(SurvObj ~ drug + as.factor(agecat), data = pbcData,
+km_age = survfit(SurvObj ~ drug + agecat, data = pbcData,
 type="kaplan-meier", conf.type="log-log")
-plot(km_age, col = 1:8, xlab = "Time", ylab = "Survival")
+plot(km_age,
+     xaxt='n', yaxt='n', ann=FALSE,
+     col = 1:8, xlab = "Time", ylab = "Survival")
 legend("bottomleft",
        legend=names(km_age$strata),
        col=1:length(km_age$strata),
-       cex=0.5,
+       cex = 0.65,
        lty=c(1,1), # gives the legend appropriate symbols (lines) 
        lwd=c(2.5,2.5))
 
 # histoplot
-km_histo = survfit(SurvObj ~ drug + as.factor(histo), data = pbcData,
+km_histo = survfit(SurvObj ~ drug + histo, data = pbcData,
 type="kaplan-meier", conf.type="log-log")
-plot(km_histo, col = 1:8, xlab = "Time", ylab = "Survival")
+plot(km_histo, las = 1, col = 1:8)
 legend("bottomleft",
        legend=names(km_histo$strata),
        col=1:length(km_histo$strata),
-       cex=0.5,
+       cex = 0.6,
        lty=c(1,1), # gives the legend appropriate symbols (lines) 
        lwd=c(2.5,2.5))
 
 
-#' To make a similar plot with the `bil` variable, I will first create a new categorical (binary) variable called `bilcat`.
 
 # bilplot
 pbcData['bilcat'] <- ifelse(pbcData["bil"][[1]]>median(pbcData["bil"][[1]]), 1, 0)
 head(pbcData)
-km_bil = survfit(SurvObj ~ drug + as.factor(bilcat), data = pbcData,
+km_bil = survfit(SurvObj ~ drug + bilcat, data = pbcData,
 type="kaplan-meier", conf.type="log-log")
-plot(km_bil, col = 1:8, xlab = "Time", ylab = "Survival")
+plot(km_bil,
+     yaxt='n', ann=FALSE,
+     cex.lab = 0.75,
+     col = 1:8)
 legend("bottomleft",
        legend=names(km_bil$strata),
        col=1:length(km_bil$strata),
-       cex=0.5,
+       cex = 0.75,
        lty=c(1,1), # gives the legend appropriate symbols (lines) 
        lwd=c(2.5,2.5))
+mtext("Time (years)", side = 1, outer = TRUE, cex = 1.15, line = 2.2, col = "black")
+mtext("Survival", side = 2, outer = TRUE, cex = 1.15, line = 2.2, col = "black")
+#' `r figs(name="km_plots_fig", caption = "Survival of Primary Biliary Cirrhosis patients treated with D-penicillimin (DPCA) or a placebo.")`
 
-figs(name="km_plots_fig", caption = "Survival of Primary Biliary Cirrhosis patients treated with D-penicillimin (DPCA) or a placebo.")
+#' 
+
+#' To make a similar plot with the `bil` variable, I will first create a new categorical (binary) variable called `bilcat`.
