@@ -172,7 +172,6 @@ pbcData %>%
     group_by(histo, drug) %>%
     summarise(med_surv = median(survyr))
 
-par(mfrow=c(2,2))
 
 
 #' I decided to put all variables of interest into one model rather creating multiple models that address each of the above questions, because the instructions say to have at most one figure and one table. If any of the results are statistically significant, I can explore the question further with a more specific model in the future. 
@@ -184,36 +183,70 @@ cox_all_var %>%
 tidy()
 coef(cox_all_var) %>%
 summary()
-df <- data_frame(adj_HR = exp(coef(cox_all_var)),
-           lower = confint(cox_all_var)[,1],
-           upper = confint(cox_all_var)[,2])
+df <- data.frame(adj_HR = round(exp(coef(cox_all_var)), 2),
+           lower_CI = round(confint(cox_all_var)[,1], 2),
+           upper_CI = round(confint(cox_all_var)[,2], 2))
+rownames(df) <- rownames(confint(cox_all_var))
+
+#install.packages("captioner")
+library(captioner, help)
+figs <- captioner(prefix="Figure")
+tbls <- captioner(prefix="Table")
 library(knitr)
 knitr::kable(df, format = "markdown")
-rownames(confint(cox_all_var))
+tbls(name="adj_HR_tbl", caption = "Adjusted Hazard Ratio Estimates of Death obtained from Proportional Hazards Regression.")
 #' The results of the model 
 
 #' Plotting
-km_drug_sex = survfit(SurvObj ~ drug + sex, data = pbcData,
+par(mfrow=c(2,2))
+palette()
+# sexplot
+km_sex = survfit(SurvObj ~ drug + sex, data = pbcData,
 type="kaplan-meier", conf.type="log-log")
+plot(km_sex, col = 1:8, xlab = "Time", ylab = "Survival")
+legend("bottomleft",
+       legend=names(km_sex$strata),
+       col=1:length(km_sex$strata),
+       cex=0.5,
+       lty=c(1,1), # gives the legend appropriate symbols (lines) 
+       lwd=c(2.5,2.5))
+
+# ageplot
 km_age = survfit(SurvObj ~ drug + as.factor(agecat), data = pbcData,
 type="kaplan-meier", conf.type="log-log")
-km_histo = survfit(SurvObj ~ drug + as.factor(histo), data = pbcData,
-type="kaplan-meier", conf.type="log-log")
+plot(km_age, col = 1:8, xlab = "Time", ylab = "Survival")
+legend("bottomleft",
+       legend=names(km_age$strata),
+       col=1:length(km_age$strata),
+       cex=0.5,
+       lty=c(1,1), # gives the legend appropriate symbols (lines) 
+       lwd=c(2.5,2.5))
 
 # histoplot
+km_histo = survfit(SurvObj ~ drug + as.factor(histo), data = pbcData,
+type="kaplan-meier", conf.type="log-log")
 plot(km_histo, col = 1:8, xlab = "Time", ylab = "Survival")
 legend("bottomleft",
        legend=names(km_histo$strata),
-       col=1:8,
+       col=1:length(km_histo$strata),
        cex=0.5,
        lty=c(1,1), # gives the legend appropriate symbols (lines) 
        lwd=c(2.5,2.5))
 
 
-#' To make a similar plot with the `bil` variable, I will create a new categorical variable called `bilcat`.
+#' To make a similar plot with the `bil` variable, I will first create a new categorical (binary) variable called `bilcat`.
 
 # bilplot
 pbcData['bilcat'] <- ifelse(pbcData["bil"][[1]]>median(pbcData["bil"][[1]]), 1, 0)
 head(pbcData)
 km_bil = survfit(SurvObj ~ drug + as.factor(bilcat), data = pbcData,
 type="kaplan-meier", conf.type="log-log")
+plot(km_bil, col = 1:8, xlab = "Time", ylab = "Survival")
+legend("bottomleft",
+       legend=names(km_bil$strata),
+       col=1:length(km_bil$strata),
+       cex=0.5,
+       lty=c(1,1), # gives the legend appropriate symbols (lines) 
+       lwd=c(2.5,2.5))
+
+figs(name="km_plots_fig", caption = "Survival of Primary Biliary Cirrhosis patients treated with D-penicillimin (DPCA) or a placebo.")
