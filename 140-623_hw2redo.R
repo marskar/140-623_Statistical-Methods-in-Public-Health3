@@ -9,6 +9,7 @@
 #' ## Learning Objectives:
 
 #' Students who successfully complete this section will be able to:
+
 #' - To evaluate whether the drug DPCA prolongs life in patients.
 #' - To identify baseline characteristics of patients which predict longer survival.
 #' - Analyze the survival time data (without grouping) by the Kaplan-Meier estimate of the
@@ -25,6 +26,7 @@
 #' Between January 1974 and May 1984, a double-blinded randomized trial on patients with primary biliary cirrhosis (PBC) of the liver was conducted at the Mayo clinic. A total of 312 patients were randomized to either receive the drug D-penicillin (DPCA) or a placebo. Patients were followed until they died from PBC or until censoring, either because of administrative censoring (withdrawn alive at end of study), death not attributable to PBC, liver transplantation, or loss to follow-up. At baseline, a large number of clinical, biochemical, serological and histologic measurements were recorded on each patient. This data set is a subset of the original data, and includes information on each patient's time to death or censoring, treatment, age, gender, serum bilirubin, and histologic disease stage (1-4).
 
 #' The variables included in this dataset include:
+
 #'- case: unique patient ID number
 #'- sex: 0 = male, 1 = female (coded as "Female" and "Male" in the csv file rather than 0/1)
 #'- drug: 0 = placebo, 1 = DPCA
@@ -36,6 +38,7 @@
 #'- agecat: age categories, coded as "< 45 yrs", "45 - 55 yrs", and ">= 55 yrs"
 
 #' Also included in the data set for your possible use are the following indicator (dummy) variables:
+
 #' 
 #' Age Indicators (indicator versions of agecat):
 #' - agegr_2: 1 if patient is 45-55 years old, 0 otherwise
@@ -57,10 +60,13 @@
 #' following code. In the following list of commands, if you want to look at differences by other
 #' variables than drug, you should change the variable name! Create a new .R file to type/run your
 #' commands so that you will have a record of your analysis.
+
+setwd("~/github/140-623_Statistical-Methods-in-Public-Health3")
 library(readr)
 pbcData = read_csv("pbctrial.csv")
 
 #' a. Explore the data using descriptive statistics:
+
 #'- table()
 #'- prop.table()
 #'- summary() etc
@@ -68,6 +74,8 @@ pbcData = read_csv("pbctrial.csv")
 dim(pbcData)
 str(pbcData)
 summary(pbcData)
+sum(pbcData$death)
+sum(pbcData$death)/length(pbcData$death)*100
 library(purrr, help)
 map(pbcData, class)
 pbcData$histo <- as.factor(pbcData$histo)
@@ -129,24 +137,17 @@ summary(model2)
 
 #' ## Introduction 
 
-#' Between January 1974 and May 1984 a double-blinded randomized trial on patients with primary biliary cirrhosis (PBC) of the liver was conducted at the Mayo clinic. A total of 312 patients were randomized to either receive the drug D-penicillimin (DPCA), or a placebo. Patients were followed until they died from PBC, or until censoring, either because of administrative censoring (withdrawn alive at end of study), death not attributable to PBC, liver transplantation, or loss to follow-up. At baseline clinical, biochemical, serological and histologic measurements were recorded on each patient. A sub-study was undertaken to test for increased survival amongst patients on the new treatment, and to investigate the association between survival and patients' age, gender, histologic stage of disease, and serum bilirubin level.
-
-#' The research question that I will try to answer in this report is whether D-penicillin (DPCA), the drug tested in the PBC trial, provided any benefit for the patient population as a whole (n=312) and for sub-groups based on sex, age and disease stage. I hypothesize that the drug effect will not be different between the 3 age categories, but will depend on disease stage. In other wrods, I expect that there will be differences in time to death between the 4 disease stages, specifically that more advanced disease will be more difficult to treat, which will result in a shorter time to event. I will also assess whether bilirubin is a prognostic marker and whether drug benefit will differ among men versus women.
+#' The research question that I will try to answer in this report is whether D-penicillin (DPCA) provided any benefit for the primary biliary cirrhosis (PBC) patient population as a whole (n=312) and for sub-groups based on sex, age and histologic disease stage in a double-blinded randomized trial conducted at the Mayo clinic between January 1974 and May 1984. I hypothesize that the drug effect (if any) will be diminished in the higher age categories and disease stages. In other words, I expect that there will be differences in drug reponse as measured by time to death between the 4 disease stages and 3 age categories, specifically that older patients and those with more advanced disease will be more difficult to treat, which will result in a shorter survival time. I will also assess whether serum bilirubin level is a prognostic marker and whether drug benefit will differ among men versus women.
 #' 
 
-#' ## Data description 
+#' ## Results
 
+#' I calculated descriptive statistics and determined that the overall median survival time was around 5 years. As for patient characteristics, the representation across age categories and disease stages appears to spread relatively evenly. The `age` and `survyr` variables appear to be normally distributed with a slight rightward skew. Interestingly, bilirubin is skewed highly to the right (mean = 3.3 mg/dl, median = 1.4 mg/dl) indicating that there are outliers with high bilirubin values. The patient population is 88% female; out of the total 312 patients, 276 were women and only 36 were men. Ages of patients ranged from 26 to 78 years, with a median age of ~50 years. Roughly three-thirds of of the patients were in a histologic stage 3 or 4. Mortality was high during the study. In the data collected, approximately 40% (125 out of 312) of study participants died from primary biliary cirrhosis.
 
-#' There are a total of 312 patients and the median survival time was around 5 years. As for patient characteristics, the representation across age categories and disease stages appears to spread relatively evenly. The `age` and `survyr` variable appear to be normally distributed with a slight leftward skew. Interestingly, bilirubin is skewed highly to the left indicating that there are outliers with high bilirubin values.
+#' There was no statistically significant (using an $\alpha$ of .05) difference between patients in the placebo and drug groups. Overall, simple Cox proportional hazards regression analysis showed that the drug group had a 6% greater hazard of death than the placebo group. Multivariable Cox regression analysis that included sex, age categories, bilirubin levels, and histologic disease stage in the model showed a 12% greater hazard in the group assigned the drug, though this results was also not statistically significant. Table 1 summarizes the results of the multivariate Cox regression analysis. I used the Wald and likelihood ratio tests to assess the statistical significance of the variables in the multivariate Cox regression model. There was a statistically significant increase in hazard of death for males versus females (HR = 1.71, p = 0.027), and those in the highest age category versus the lowest age category (HR = 1.71, p=0.031) and most advanced histologic disease stage versus the least advanced disease stage (HR = 15.0, p = 0.008). 
 
+#' I also calculated Kaplan-Meier estimates of sub-groups based on the variables in the multivariate Cox regression model and the `drug` variable. These analyses did not indicate that the drug might be beneficial to some types of patients. Kaplan-Meier estimates of the survivor functions for various sample sub-groupings were calculated. Simple Cox regression models were used to evaluate univariate associations between patient characteristics and survival. Serum bilirubin was the only continuous covariate in the regression models and I converted this into a categorical variable (binary) that was assigned a value of 1 if serum bilirunbin level was above the median and 0 if serum bilirunbin level was below the median. I plotted the Kaplan-Meier estimates against time. Shockingly, men taking the drug appear to have a much shorter survival time than men taking placebo or women in either treatment group(Figure 1 top-left). This may help to explain why males had a 71% greater hazard of death compared to otherwise similar females (p = 0.027) in multivariate Cox regression analysis. The drug also appeared to have a negative effect on survival in patients with earliest stage of disease (histo = 1) compared to later stages (Figure 1 bottom-left). Also noteworthy was the categorical variable I created using bilirubin levels appears to cleanly divide patients with the best and worst survival (Figure 1 bottom-right).
 #' 
-
-#' ## Methods
-#' Descriptive statistics were calculated to investigate sample characteristics. Kaplan-Meier estimates of the survivor functions for various sample sub-groupings were calculated. Simple Cox regression models were used to evaluate univariate associations between patient characteristics and survival. Multivariable Cox regression was used to examine the association between survival and multiple patient characteristics simultaneously. Serum bilirubin was the only continuous covariate in the regression models. Age was modeled as a categorical variable, based on tertiles in the sample, to allow for a non-linear relationship between age and the loghazard of death. Both Wald and likelihood ratio methods were used to test for the statistical significance of covariates in the final multiple proportional hazards model. Only predictors achieving statistical significance ($\alpha$ = .05) were included in the final multivariable model.
-#' 
-
-#' ## Study Enrollees
-#' The sample consists of 312 patients with primary biliary cirrhosis enrolled from 1974 to 1984 at the Mayo Clinic in Rochester, MN. The sample is majority female (276 patients, 88%) with only 36 male patients (12%). The average patient age at enrollment was 50 years, and the sample age range was from 26 to 78 years. The majority (75%) of the patients were in a later stage of the disease (Histologic Stage 3 or 4) at the time of enrollment. Average serum bilirubin level among participants at time of enrollment was 3.3 mg/dl. At the time of this analysis, 125 patients (40%) had died from causes related to primary biliary cirrhosis. Results Patients in the drug group had 6% greater hazard ("risk") of death than those in the placebo group, but this result was not statistically significant (95% CI, -25% - 50%, p > .05).
 
 #' 
 
@@ -161,7 +162,7 @@ summary(model2)
 #' 
 
 #' ## Results 
-#' First, I will produce a few simple summaries of drug response based on `sex`, `agecat` and `histo` variables. First some basic exploratory data analysis will let me know if I am on the right track with the variables I have chosen. If there is no difference between the median survival times of the groups I am interested in, it will be unlikely that I will see anything significant in my model. From this initial analysis it looks like patients in the highest age category that were given placebo fare the worst. These results indicate that elderly patients my stand to benefit the most from taking the drug. Shockingly, men taking the drug appear to have a shorter survival time than with the drug, and do not survive as long as a women in general. Similarly, the drug appeared to have a negative effect on survival in patients with earliest stage of disease (histo = 1). Now I will take a similar approach to the data but using a cox proportional hazards model.
+#' First, I will produce a few simple summaries of drug response based on `sex`, `agecat` and `histo` variables. First some basic exploratory data analysis will let me know if I am on the right track with the variables I have chosen. If there is no difference between the median survival times of the groups I am interested in, it will be unlikely that I will see anything significant in my model. 
 library(dplyr)
 # install.packages("broom")
 library(broom)
@@ -185,11 +186,13 @@ all_var_summary <- summary(cox_all_var)
 library(broom, help)
 cox_all_var %>%
 tidy()
+cox_all_var %>%
+summary()
 coef(cox_all_var) %>%
 summary()
 df <- data.frame(adj_HR = round(exp(coef(cox_all_var)), 2),
-           lower_CI = round(confint(cox_all_var)[,1], 2),
-           upper_CI = round(confint(cox_all_var)[,2], 2))
+           lower_CI = round(exp(confint(cox_all_var)[,1], 2)),
+           upper_CI = round(exp(confint(cox_all_var)[,2], 2)))
 rownames(df) <- rownames(confint(cox_all_var))
 
 #install.packages("captioner")
