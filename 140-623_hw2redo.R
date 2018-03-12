@@ -144,25 +144,16 @@ summary(model2)
 
 #' I calculated descriptive statistics and determined that the overall median survival time was around 5 years. As for patient characteristics, the representation across age categories and disease stages appears to spread relatively evenly. The `age` and `survyr` variables appear to be normally distributed with a slight rightward skew. Interestingly, bilirubin is skewed highly to the right (mean = 3.3 mg/dl, median = 1.4 mg/dl) indicating that there are outliers with high bilirubin values. The patient population is 88% female; out of the total 312 patients, 276 were women and only 36 were men. Ages of patients ranged from 26 to 78 years, with a median age of ~50 years. Roughly three-thirds of of the patients were in a histologic stage 3 or 4. Mortality was high during the study. In the data collected, approximately 40% (125 out of 312) of study participants died from primary biliary cirrhosis.
 
-#' There was no statistically significant (using an $\alpha$ of .05) difference between patients in the placebo and drug groups. Overall, simple Cox proportional hazards regression analysis showed that the drug group had a 6% greater hazard of death than the placebo group. Multivariable Cox regression analysis that included sex, age categories, bilirubin levels, and histologic disease stage in the model showed a 12% greater hazard in the group assigned the drug, though this results was also not statistically significant. Table 1 summarizes the results of the multivariate Cox regression analysis. I used the Wald and likelihood ratio tests to assess the statistical significance of the variables in the multivariate Cox regression model. There was a statistically significant increase in hazard of death for males versus females (HR = 1.71, p = 0.027), and those in the highest age category versus the lowest age category (HR = 1.71, p=0.031) and most advanced histologic disease stage versus the least advanced disease stage (HR = 15.0, p = 0.008). 
+#' There was no statistically significant (using an $\alpha$ of .05) difference between patients in the placebo and drug groups. Overall, simple Cox proportional hazards regression analysis showed that the drug group had a 6% greater hazard of death than the placebo group. Multivariable Cox regression analysis that included sex, age categories, bilirubin levels, and histologic disease stage in the model showed a 12% greater hazard in the group assigned the drug, though this results was also not statistically significant. Table 1 summarizes the results of the multivariate Cox regression analysis. I used the Wald and likelihood ratio tests to assess the statistical significance of the variables in the multivariate Cox regression model. There was a statistically significant increase in hazard of death for males versus females (HR = 1.71, p = 0.027), and those in the highest age category versus the lowest age category (HR = 1.71, p=0.031) and most advanced (histo = 4) histologic disease stage versus the least advanced (histo = 1) disease stage (HR = 15.0, p = 0.008). There was also a 16% higher hazard of death with every unit (mg/dl) increase of serum bilirubin (p < 0.001).
 
-#' I also calculated Kaplan-Meier estimates of sub-groups based on the variables in the multivariate Cox regression model and the `drug` variable. These analyses did not indicate that the drug might be beneficial to some types of patients. Kaplan-Meier estimates of the survivor functions for various sample sub-groupings were calculated. Simple Cox regression models were used to evaluate univariate associations between patient characteristics and survival. Serum bilirubin was the only continuous covariate in the regression models and I converted this into a categorical variable (binary) that was assigned a value of 1 if serum bilirunbin level was above the median and 0 if serum bilirunbin level was below the median. I plotted the Kaplan-Meier estimates against time. Shockingly, men taking the drug appear to have a much shorter survival time than men taking placebo or women in either treatment group(Figure 1 top-left). This may help to explain why males had a 71% greater hazard of death compared to otherwise similar females (p = 0.027) in multivariate Cox regression analysis. The drug also appeared to have a negative effect on survival in patients with earliest stage of disease (histo = 1) compared to later stages (Figure 1 bottom-left). Also noteworthy was the categorical variable I created using bilirubin levels appears to cleanly divide patients with the best and worst survival (Figure 1 bottom-right).
+#' I also calculated Kaplan-Meier estimates of sub-groups based on the variables in the multivariate Cox regression model and the `drug` variable. These analyses did not indicate that the drug might be beneficial to some types of patients. Kaplan-Meier estimates of the survivor functions for various sample sub-groupings were calculated. Simple Cox regression models were used to evaluate univariate associations between patient characteristics and survival. Serum bilirubin was the only continuous covariate in the regression models and I converted this into a categorical variable (binary) that was assigned a value of 1 if serum bilirunbin level was above the median and 0 if serum bilirunbin level was below the median. I plotted the Kaplan-Meier estimates against time. Shockingly, men taking the drug appear to have a much shorter survival time than men taking placebo or women in either treatment group(Figure 1 top-left). This may help to explain why males had a 71% greater hazard of death compared to otherwise similar females (p = 0.027) in multivariate Cox regression analysis. The drug also appeared to have a negative effect on survival in patients with earliest stage of disease (histo = 1) compared to later stages (Figure 1 bottom-left). The categorical variable I created using bilirubin levels appears to cleanly divide patients with the best and worst survival in both treatment groups (Figure 1 bottom-right).
 #' 
-
-#' 
-
-#' Serum bilirubin level, patients age, and histologic stage of disease all had statistically significant ($\alpha$ = .05) positive univariate associations with the hazard of death. Males had 62% higher risk of death than females (95% CI 2% - 158%, p = .04). In a multivariable analysis, serum bilirubin level, gender, and histologic stage of disease were found to have statistically significant associations with patient survival. The hazard ratio associated with a 1 mg/dl increase in serum bilirubin level was 1.16 (95% CI 1.13 - 1.19), indicating that a patient's risk of death increases by 16% for each 1 mg/dl increase in serum bilirubin after adjustment for gender, disease stage and age. The hazard ratio of death for males relative to females was 1.70 (95% CI 1.05 - 2.74), indicating that males had a 70% increase in the hazard of death compared to otherwise similar females. Those patients in the highest stage (stage 4) of disease had greater than 14 times the adjusted risk (95% CI 2.01 - 107.40) of dying when compared to patients in the earliest stage (stage 1). Table 1 presents results from both the unadjusted and adjusted sets of analyses.
-
-#' ## Graphical display 
-#' I plotted cox model fitted values against ageyr and bil variables marking sex and disease stage (`histo`) with color and different symbols, respectively. 
 
 #' ## Conclusions
-#' DCPA was not found to be statistically significantly associated with increased survival in either univariate or multivariable analyses. As this was a randomized trial with 312 patients, we conclude that DPCA does not appear to be efficacious in the treatment of patients with primary biliary cirrhosis. While primary biliary cirrhosis is a disease that primarily affects females, the prognosis is significantly worse for males. Similarly, the risk of death is much worse for patients in later stages of the disease relative to those in the earlier stages. The results of this research suggest that improved screening techniques to identify the disease in affected patients early on, coupled with increased outreach to males at risk of developing PBC could result in a better overall prognosis for patients having this disease.
-#' It is clear that all of the variables I picked are important in the final model although not all levels of the categorical variables were statistically significant. This work is only the beginning and more precise answers to the research questions discussed in the introduction will require further inspection with models more precisely adapted to each research question.
+#' The drug tested in this study DCPA did not statistically significantly increase survival according to univariate or multivariable cox proportional hazards analyses. The conclusion I draw from this randomized trial is that DPCA is not an effective treatment for patients with primary biliary cirrhosis. Alarmingly, the drug appears to increase the risk of death for men and patients with least advanced disease stage as determined by histology. The analysis described herein also present the possibility that bilirubin could be a prognostic biomarker for primary biliary cirrhosis. This work is only the beginning and more precise answers to the research questions discussed in the introduction will require further inspection with models more precisely adapted to each research question.
 #' 
 
-#' ## Results 
-#' First, I will produce a few simple summaries of drug response based on `sex`, `agecat` and `histo` variables. First some basic exploratory data analysis will let me know if I am on the right track with the variables I have chosen. If there is no difference between the median survival times of the groups I am interested in, it will be unlikely that I will see anything significant in my model. 
+# First, I will produce a few simple summaries of drug response based on `sex`, `agecat` and `histo` variables. First some basic exploratory data analysis will let me know if I am on the right track with the variables I have chosen. If there is no difference between the median survival times of the groups I am interested in, it will be unlikely that I will see anything significant in my model. 
 library(dplyr)
 # install.packages("broom")
 library(broom)
@@ -178,7 +169,7 @@ pbcData %>%
 
 
 
-#' I decided to put all variables of interest into one model rather creating multiple models that address each of the above questions, because the instructions say to have at most one figure and one table. If any of the results are statistically significant, I can explore the question further with a more specific model in the future. 
+# I decided to put all variables of interest into one model rather creating multiple models that address each of the above questions, because the instructions say to have at most one figure and one table. If any of the results are statistically significant, I can explore the question further with a more specific model in the future. 
 
 
 cox_all_var = coxph(formula = SurvObj ~ drug + sex + bil + histo + agecat, data = pbcData)
@@ -188,11 +179,15 @@ cox_all_var %>%
 tidy()
 cox_all_var %>%
 summary()
+coef(cox_all_var)
+tidy(cox_all_var)["p.value"]
 coef(cox_all_var) %>%
 summary()
-df <- data.frame(adj_HR = round(exp(coef(cox_all_var)), 2),
-           lower_CI = round(exp(confint(cox_all_var)[,1], 2)),
-           upper_CI = round(exp(confint(cox_all_var)[,2], 2)))
+
+df <- data.frame(adj_HR = round(exp(coef(cox_all_var)), 3),
+           lower_CI = round(exp(confint(cox_all_var)[,1]), 3),
+           upper_CI = round(exp(confint(cox_all_var)[,2]), 3),
+           p_value = round(tidy(cox_all_var)["p.value"], 3))
 rownames(df) <- rownames(confint(cox_all_var))
 
 #install.packages("captioner")
@@ -206,9 +201,7 @@ knitr::kable(df, format = "markdown")
 
 #'
 
-#' The results of the model 
-
-#' Plotting
+# Plotting
 par(mfrow=c(2,2), mar = c(0, 0, 0, 0), oma = c(4, 4, 0.1, 0.1))
 palette()
 # sexplot
@@ -251,6 +244,7 @@ legend("bottomleft",
 
 
 # bilplot
+# To make a similar plot with the `bil` variable, I will first create a new categorical (binary) variable called `bilcat`.
 pbcData['bilcat'] <- ifelse(pbcData["bil"][[1]]>median(pbcData["bil"][[1]]), 1, 0)
 head(pbcData)
 km_bil = survfit(SurvObj ~ drug + bilcat, data = pbcData,
@@ -271,4 +265,3 @@ mtext("Survival", side = 2, outer = TRUE, cex = 1.15, line = 2.2, col = "black")
 
 #' 
 
-#' To make a similar plot with the `bil` variable, I will first create a new categorical (binary) variable called `bilcat`.
