@@ -73,48 +73,53 @@ AIC(model2)
 #' - Graphical display that presents evidence in the data relevant to your scientific question.
 #' 
 
-#' ## Introduction 
-
-#' The Framingham Heart Study is a prospective study that followed study participants for 24 years in an attempt to better understand the etiology of cardiovascular disease. The study population is the community of Framingham, Massachusetts. The data that were obtain from the study were binned into 1875-day intervals (roughly 5 years). Additionally, categorical variables were created from the ages and body mass indices (BMI) of study participants.
-
-#' ## Data Description
-
-#' The research question that I will try to answer in this report is whether there is a relationship between grouped survival time data and baseline covariates of interest in the Framingham Heart Study. To answer this question I will use a binned version of the Framingham data set and log-linear Poisson regression models. I hypothesize that smoking status, BMI and agecat will have a strong effect on  the death rate. Specifically, I expect that male, obese, diabetic study participants that smoke and belong to the oldest age category will have a higher death rate. I will also assess whether anti-hypertensive medications provide any benefit.
-
-#' 
-
-#' ## Results
-
-#' I calculated descriptive statistics and determined that the overall median survival time was around 5 years. As for patient characteristics, the representation across age categories and disease stages appears to spread relatively evenly. The `age` and `survyr` variables appear to be normally distributed with a slight rightward skew. Interestingly, bilirubin is skewed highly to the right (mean = 3.3 mg/dl, median = 1.4 mg/dl) indicating that there are outliers with high bilirubin values. The patient population is 88% female; out of the total 312 patients, 276 were women and only 36 were men. Ages of patients ranged from 26 to 78 years, with a median age of ~50 years. Roughly three-thirds of of the patients were in a histologic stage 3 or 4. Mortality was high during the study. In the data collected, approximately 40% (125 out of 312) of study participants died from primary biliary cirrhosis.
-
-#' ## Conclusions
-
-#' The drug tested in this study DCPA did not statistically significantly increase survival according to univariate or multivariable cox proportional hazards analyses. The conclusion I draw from this randomized trial is that DPCA is not an effective treatment for patients with primary biliary cirrhosis. Alarmingly, the drug appears to increase the risk of death for men and patients with least advanced disease stage as determined by histology. The analysis described herein also present the possibility that bilirubin could be a prognostic biomarker for primary biliary cirrhosis. This work is only the beginning and more precise answers to the research questions discussed in the introduction will require further inspection with models more precisely adapted to each research question.
-
 model3 = glm(D ~ gender + cursmoke + diabetes + bpmeds + bmicat + agecat, offset = log(Y), data =  framData, family=poisson(link="log"))
 summary(model3)
 AIC(model3)
 
-plot(model3)
 
 library(broom, help)
 tidy(model3)
 coef(model3)
 tidy(model3)$p.value
 
-df <- data.frame(adj_HR = round(exp(coef(cox_all_var)), 3),
-           lower_CI = round(exp(confint(cox_all_var)[,1]), 3),
-           upper_CI = round(exp(confint(cox_all_var)[,2]), 3),
-           p_value = round(tidy(cox_all_var)$p.value, 3))
-rownames(df) <- rownames(confint(cox_all_var))
+df <- data.frame(adj_RR = round(exp(coef(model3)), 4),
+           lower_CI = round(exp(confint(model3)[,1]), 4),
+           upper_CI = round(exp(confint(model3)[,2]), 4),
+           p_value = round(tidy(model3)$p.value, 4))
+rownames(df) <- rownames(confint(model3))
+df
 
 #install.packages("captioner")
 library(captioner, help)
 figs <- captioner(prefix="Figure")
 tbls <- captioner(prefix="Table")
 library(knitr)
+
+#' ## Introduction 
+
+#' The Framingham Heart Study is a prospective study that followed study participants for 24 years in an attempt to better understand the etiology of cardiovascular disease. The study population is the community of Framingham, Massachusetts. The data that were obtain from the study were binned into 1875-day intervals (roughly 5 years). Additionally, categorical variables were created from the ages and body mass indices (BMI) of study participants.
+
+#' ## Data Description
+
+#' The research question that I will try to answer in this report is whether there is a relationship between grouped survival time data and baseline covariates of interest in the Framingham Heart Study. To answer this question, I will use a binned version of the Framingham data set and log-linear Poisson regression models. I hypothesize that smoking status, BMI and agecat will have a strong effect on  the death rate. Specifically, I expect that male, obese, diabetic study participants that smoke and belong to the oldest age category will have a higher death rate. I will also assess whether anti-hypertensive medications provide any benefit.
+
+#' 
+
+#' ## Results
+
+#' I calculated descriptive statistics and determined that the overall mean and median death rates are `r mean(framData$Rate)` and `r median(framData$Rate)`. Interestingly, the `Rate` variable is skewed highly to the right indicating that there are outliers with high death rates. The study population is `r sum(framData$gender)/length(framData$gender)*100`% female; out of the total `r length(framData$gender)` study participants, `r sum(framData$gender)` were women and `r length(framData$gender)-sum(framData$gender)` were men. Roughly `r sum(framData$bpmeds)/length(framData$bpmeds)*100`% of the study participants took blood pressure medication. All of the variables in my log-linear model (`r coef(model3)`) were statistically significant (based on an $\alpha$ value of 0.5). The results of the model of summarized in Table 1. The first column shows the death rate ratio, the second and third columns show the lower and upper confidence intervals (respectively) and the final column shows the first four subzero digits of the p-value. All of the death rate ratios were above 1 except for gender indication that being a current smoker, taking anti-hypertensive medication, being diabetic, being obese and being elderly were all associated with a higher death rate, while being female meant that participants were less likely to die in the Framingham study. The `diabetes` variable had the highest coefficient, but also the widest confidence interval. I then 
+
+#' ## Conclusions
+
+#' The drug tested in this study DCPA did not statistically significantly increase survival according to univariate or multivariable cox proportional hazards analyses. The conclusion I draw from this randomized trial is that DPCA is not an effective treatment for patients with primary biliary cirrhosis. Alarmingly, the drug appears to increase the risk of death for men and patients with least advanced disease stage as determined by histology. The analysis described herein also present the possibility that bilirubin could be a prognostic biomarker for primary biliary cirrhosis. This work is only the beginning and more precise answers to the research questions discussed in the introduction will require further inspection with models more precisely adapted to each research question. 
+
+#' ## Graphical Display 
+#' I decided to plot the log death rates per bin for every observation and color each of the variables of interest. The mean for each subgroup is shown as a horizontal bar. Interestingly, the diabetes (`diabetes=1`; bottom-left) and higher age categories (`agecat=3` and `4`; top-left) were consistently associated with a higher death rate. As for the bpmeds variable, I believe that the high coefficient associated with this variable would disappear if we controlled for blood pressure, as participants with the highest blood pressure would be most likely to be perscribed anti-hypertensive medicine and most likely to die of cardiovascular complications. In conclusion, this analysis presents a multivariate log-linear model and univariate plots that highlight a potentially important link between various variables and the death rate in the Framingham Heart Study. Among the variables studied (`r coef(model3)`) diabetes stood out as having the strong association (highest coefficient) with the death rate. Further research is needed to improve our understanding of the interactions and etiologies of diabetes and cardiovascular disease.
+
 knitr::kable(df, format = "markdown")
-head(framData)
+
+#' `r tbls(name="adj_RR_tbl", caption = "Adjusted Hazard Ratio Estimates of Death obtained from Proportional Hazards Regression.")`
 
 bins <- unique(framData$tbin)
 
@@ -210,3 +215,5 @@ legend("top",
        pch = 1,
        col=1:length(unique(framData$gender)),
        cex = 0.75)
+
+#' `r figs(name="km_plots_fig", caption = "Survival of Primary Biliary Cirrhosis patients treated with D-penicillimin (DPCA) or a placebo.")`
